@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Household Power Consumption</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+    <form method="POST">
+  <label for="cost_per_kwh">Cost per Kilowatt-Hour:</label>
+  <input type="text" id="cost_per_kwh" name="cost_per_kwh"><br>
+
+  <label for="usage_hours">Usage Hours:</label>
+  <input type="text" id="usage_hours" name="usage_hours"><br>
+
+  <input type="submit" value="Submit">
+</form>
+
+{% if sub_metering_1 %}
+<h2>Individual Appliance Consumption</h2>
+<table>
+  <tr>
+    <th>Appliance</th>
+    <th>Mean Energy Consumption (kW)</th>
+    <th>Cost (USD)</th>
+  </tr>
+  <tr>
+    <td>Sub-Metering 1</td>
+    <td>{{ sub_metering_1 }}</td>
+    <td>{{ sub_metering_1_cost }}</td>
+  </tr>
+  <tr>
+    <td>Sub-Metering 2</td>
+    <td>{{ sub_metering_2 }}</td>
+    <td>{{ sub_metering_2_cost }}</td>
+  </tr>
+  <tr>
+    <td>Sub-Metering 3</td>
+    <td>{{ sub_metering_3 }}</td>
+    <td>{{ sub_metering_3_cost }}</td>
+  </tr>
+</table>
+{% endif %}
+
+
+	<div class="container">
+		<div class="row">
+			<div class="col-6">
+				<div id="chart"></div>
+			</div>
+			<div class="col-6">
+				<div id="output"></div>
+				<div>
+    <button id="sub_metering_1_button" type="button" class="btn btn-primary">Sub_metering_1</button>
+    <span id="sub_metering_1_output"></span>
+</div>
+<div>
+    <button id="sub_metering_2_button" type="button" class="btn btn-primary">Sub_metering_2</button>
+    <span id="sub_metering_2_output"></span>
+</div>
+<div>
+    <button id="sub_metering_3_button" type="button" class="btn btn-primary">Sub_metering_3</button>
+    <span id="sub_metering_3_output"></span>
+</div>
+
+			</div>
+		</div>
+	</div>
+
+	<script>
+    $(document).ready(function() {
+        var applianceList = ['sub_metering_1', 'sub_metering_2', 'sub_metering_3'];
+        for (var i = 0; i < applianceList.length; i++) {
+            (function(appliance) {
+                $("#"+appliance+"_button").on("click", function() {
+                    $.ajax({
+                        url: "/data/" + appliance,
+                        success: function(data) {
+                            $("#"+appliance+"_output").html(appliance + ": " + data);
+                        },
+                        error: function(xhr, status, error) {
+                            alert("Error: " + error);
+                        }
+                    });
+                });
+            })(applianceList[i]);
+        }
+    });
+	</script>
+
+</body>
+</html>
